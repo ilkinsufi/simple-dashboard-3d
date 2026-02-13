@@ -1,12 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-const LinkButton = ({
-  to,
-  children,
-}: {
-  to: string;
-  children: React.ReactNode;
-}) => {
+const LinkButton = ({ to, children }: { to: string; children: React.ReactNode }) => {
   return (
     <Link
       to={to}
