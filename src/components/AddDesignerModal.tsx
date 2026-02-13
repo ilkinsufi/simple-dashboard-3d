@@ -66,13 +66,8 @@ export function AddDesignerModal({ open, onClose }: Props) {
   }
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="modal"
-      aria-labelledby={MODAL_TITLE_ID}
-      aria-modal="true"
-    >
-      <div className="modal-box max-h-[85dvh] overflow-y-auto">
+    <dialog ref={dialogRef} className="modal" aria-labelledby={MODAL_TITLE_ID} aria-modal="true">
+      <div className="modal-box max-h-[85dvh] overflow-y-auto rounded-2xl shadow-xl">
         <h2 id={MODAL_TITLE_ID} className="text-lg font-bold">
           Add new designer
         </h2>
@@ -103,11 +98,11 @@ export function AddDesignerModal({ open, onClose }: Props) {
           </fieldset>
 
           <fieldset className="fieldset">
-            <legend className="fieldset-legend">Working hours (0–24)</legend>
+            <legend className="fieldset-legend">Working hours (0–40)</legend>
             <input
               type="number"
               min={0}
-              max={24}
+              max={40}
               step={1}
               placeholder="Example: 8"
               value={workingHours}

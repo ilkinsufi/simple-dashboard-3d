@@ -6,3 +6,15 @@
     dark --prefersdark;
   root: "html";
 }
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-image: linear-gradient(180deg, rgb(250 250 250 / 0.8) 0%, transparent 12rem);
+  background-attachment: fixed;
+}
+[data-theme="dark"] body {
+  background-image: linear-gradient(180deg, rgb(30 30 30 / 0.5) 0%, transparent 12rem);
+}

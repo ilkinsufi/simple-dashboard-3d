@@ -7,7 +7,11 @@ const NotFound = () => {
         <div className="max-w-md">
           <h1 className="text-5xl font-bold">404</h1>
           <p className="py-6">Page not found </p>
-          <Link to="/designers" className="btn btn-primary btn-lg" aria-label="Go back to Designers page">
+          <Link
+            to="/designers"
+            className="btn btn-primary btn-lg rounded-xl"
+            aria-label="Go back to Designers page"
+          >
             Go back
           </Link>
         </div>

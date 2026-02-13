@@ -3,7 +3,7 @@ import { z } from "zod";
 export const DesignerSchema = z.object({
   id: z.string(),
   fullName: z.string().min(2).max(100),
-  workingHours: z.number().min(0).max(24),
+  workingHours: z.number().min(0).max(40),
   attachedObjectsCount: z.number().min(0).default(0),
 });
 
@@ -15,9 +15,9 @@ export const DesignerFormSchema = z.object({
     .regex(/^[a-zA-ZəöüğıçşƏÖÜĞIÇŞ\s]+$/, "Full name must only contain letters and spaces"),
   workingHours: z.coerce
     .number()
-    .refine((n) => !Number.isNaN(n), "Working hours must be a number between 0 and 24")
+    .refine((n) => !Number.isNaN(n), "Working hours must be a number between 0 and 40")
     .min(0, "Working hours must be at least 0")
-    .max(24, "Working hours must be at most 24"),
+    .max(40, "Working hours must be at most 40"),
 });
 
 export type Designer = z.infer<typeof DesignerSchema>;

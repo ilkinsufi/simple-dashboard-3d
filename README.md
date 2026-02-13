@@ -3,21 +3,21 @@
 A small React app with two pages: **Designers** and **Editor**. Built as a front-end test (React + 3D).
 
 - **Designers** — List designers, add new (modal form), remove. Data is stored via a mock API and persists in the browser.
-- **Editor** — 3D canvas to add, select, move and edit objects linked to designers (to be implemented).
+- **Editor** — 3D canvas to add, select, move and edit objects linked to designers.
 
 ---
 
 ## Tech stack
 
-| Area            | Choice                |
-|-----------------|------------------------|
-| UI              | React 19, TypeScript   |
-| Build           | Vite                   |
-| Routing         | TanStack Router (file-based) |
-| State           | Zustand (+ persist)    |
-| Styling         | Tailwind CSS, DaisyUI  |
-| Validation      | Zod                    |
-| Code quality    | ESLint, Prettier       |
+| Area         | Choice                       |
+| ------------ | ---------------------------- |
+| UI           | React 19, TypeScript         |
+| Build        | Vite                         |
+| Routing      | TanStack Router (file-based) |
+| State        | Zustand (+ persist)          |
+| Styling      | Tailwind CSS, DaisyUI        |
+| Validation   | Zod                          |
+| Code quality | ESLint, Prettier             |
 
 ---
 
@@ -36,14 +36,14 @@ Then open the URL from the terminal (e.g. `http://localhost:5173`).
 
 ## Scripts
 
-| Command           | Description                    |
-|-------------------|--------------------------------|
-| `pnpm dev`       | Start dev server               |
-| `pnpm build`     | Production build               |
-| `pnpm preview`   | Preview production build       |
-| `pnpm lint`      | Run ESLint                     |
-| `pnpm format`    | Format with Prettier            |
-| `pnpm format:check` | Check formatting (e.g. CI)  |
+| Command             | Description                |
+| ------------------- | -------------------------- |
+| `pnpm dev`          | Start dev server           |
+| `pnpm build`        | Production build           |
+| `pnpm preview`      | Preview production build   |
+| `pnpm lint`         | Run ESLint                 |
+| `pnpm format`       | Format with Prettier       |
+| `pnpm format:check` | Check formatting (e.g. CI) |
 
 ---
 
