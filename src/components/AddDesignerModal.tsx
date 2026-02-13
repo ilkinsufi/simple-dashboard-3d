@@ -29,6 +29,13 @@ export function AddDesignerModal({ open, onClose }: Props) {
     }
   }, [open]);
 
+  function scrollInputIntoView(e: React.FocusEvent<HTMLInputElement>) {
+    const el = e.currentTarget;
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -65,7 +72,7 @@ export function AddDesignerModal({ open, onClose }: Props) {
       aria-labelledby={MODAL_TITLE_ID}
       aria-modal="true"
     >
-      <div className="modal-box">
+      <div className="modal-box max-h-[85dvh] overflow-y-auto">
         <h2 id={MODAL_TITLE_ID} className="text-lg font-bold">
           Add new designer
         </h2>
@@ -78,6 +85,7 @@ export function AddDesignerModal({ open, onClose }: Props) {
               type="text"
               placeholder="Example: John Myung"
               value={fullName}
+              onFocus={scrollInputIntoView}
               onChange={(e) => {
                 setFullName(e.target.value);
                 setFullNameError("");
@@ -103,6 +111,7 @@ export function AddDesignerModal({ open, onClose }: Props) {
               step={1}
               placeholder="Example: 8"
               value={workingHours}
+              onFocus={scrollInputIntoView}
               onChange={(e) => {
                 setWorkingHours(e.target.value);
                 setWorkingHoursError("");

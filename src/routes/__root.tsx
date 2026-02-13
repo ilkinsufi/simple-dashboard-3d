@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet, useRouterState } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { TanStackRouterDevtoolsInProd } from "@tanstack/react-router-devtools";
 import { PageTabs } from "../components/PageTabs";
+import Footer from "../components/Footer";
 
 const RootLayout = () => {
   const isNotFound = useRouterState({
@@ -8,12 +9,14 @@ const RootLayout = () => {
   });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col justify-between">
       {!isNotFound && <PageTabs />}
       <main id="main-content">
         <Outlet />
       </main>
-      <TanStackRouterDevtools position="bottom-right" />
+
+      <TanStackRouterDevtoolsInProd position="top-right" />
+      {!isNotFound && <Footer />}
     </div>
   );
 };
