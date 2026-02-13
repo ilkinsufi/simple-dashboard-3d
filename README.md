@@ -6,9 +6,9 @@ React app with two pages: **Designers** and **Editor**. Designers page lists des
 
 - **React** + **TypeScript**
 - **Vite**
-- **TanStack Router** (file-based routing)
+- **TanStack Router** (file-based routing, meta/head, not-found)
 - **Tailwind CSS**
-- **Zod** (validation)
+- **Zod** (schemas & validation)
 
 ## Run locally
 
@@ -39,6 +39,8 @@ pnpm lint
 
 ## Project structure
 
-- `src/routes/` — TanStack Router file-based routes (Designers, Editor, root, index redirect, not-found)
-- `src/components/` — Reusable components
-- `src/` — Store, API layer, schemas as you add them
+- `src/routes/` — TanStack Router file-based routes: Designers, Editor, root layout, index redirect to `/designers`, 404 not-found
+- `src/components/` — Reusable UI: `LinkButton`, `DesignerForm`, `not-found` page
+- `src/schemas/` — Zod validation: `designer.ts` (Designer + DesignerFormSchema), `object.ts` (SceneObject + ObjectFormSchema), `index.ts` re-exports
+- `src/store/` — State (e.g. Zustand) for designers and objects
+- `src/api/` — Mock API layer (to be wired to store; easy swap for real API later)
