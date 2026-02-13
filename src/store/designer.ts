@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Designer, DesignerFormData } from "../schemas";
 import { DesignerSchema } from "../schemas";
+import { initialDesigners } from "../data/initialDesigners";
 
 function nextId(): string {
   return crypto.randomUUID();
@@ -17,7 +18,7 @@ interface DesignerStore {
 export const useDesignerStore = create<DesignerStore>()(
   persist(
     (set) => ({
-      designers: [],
+      designers: initialDesigners,
       addDesigner: (data) => {
         const designer = DesignerSchema.parse({
           id: nextId(),

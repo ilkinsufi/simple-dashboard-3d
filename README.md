@@ -1,46 +1,72 @@
 # Simple Dashboard 3D
 
-React app with two pages: **Designers** and **Editor**. Designers page lists designers and allows adding new ones; Editor page provides a 3D canvas to add, select, move and edit objects linked to designers.
+A small React app with two pages: **Designers** and **Editor**. Built as a front-end test (React + 3D).
+
+- **Designers** — List designers, add new (modal form), remove. Data is stored via a mock API and persists in the browser.
+- **Editor** — 3D canvas to add, select, move and edit objects linked to designers (to be implemented).
+
+---
 
 ## Tech stack
 
-- **React** + **TypeScript**
-- **Vite**
-- **TanStack Router** (file-based routing, meta/head, not-found)
-- **Tailwind CSS**
-- **Zod** (schemas & validation)
+| Area            | Choice                |
+|-----------------|------------------------|
+| UI              | React 19, TypeScript   |
+| Build           | Vite                   |
+| Routing         | TanStack Router (file-based) |
+| State           | Zustand (+ persist)    |
+| Styling         | Tailwind CSS, DaisyUI  |
+| Validation      | Zod                    |
+| Code quality    | ESLint, Prettier       |
+
+---
 
 ## Run locally
 
-**Prerequisites:** Node.js and [pnpm](https://pnpm.io/) installed.
+**Requirements:** Node.js 18+ and [pnpm](https://pnpm.io/).
 
 ```bash
-# Install dependencies
 pnpm install
-
-# Start dev server
 pnpm dev
 ```
 
-Then open the URL shown in the terminal (e.g. `http://localhost:5173`).
+Then open the URL from the terminal (e.g. `http://localhost:5173`).
 
-## Other scripts
+---
 
-```bash
-# Build for production
-pnpm build
+## Scripts
 
-# Preview production build locally
-pnpm preview
+| Command           | Description                    |
+|-------------------|--------------------------------|
+| `pnpm dev`       | Start dev server               |
+| `pnpm build`     | Production build               |
+| `pnpm preview`   | Preview production build       |
+| `pnpm lint`      | Run ESLint                     |
+| `pnpm format`    | Format with Prettier            |
+| `pnpm format:check` | Check formatting (e.g. CI)  |
 
-# Lint
-pnpm lint
-```
+---
 
 ## Project structure
 
-- `src/routes/` — TanStack Router file-based routes: Designers, Editor, root layout, index redirect to `/designers`, 404 not-found
-- `src/components/` — Reusable UI: `LinkButton`, `DesignerForm`, `not-found` page
-- `src/schemas/` — Zod validation: `designer.ts` (Designer + DesignerFormSchema), `object.ts` (SceneObject + ObjectFormSchema), `index.ts` re-exports
-- `src/store/` — State (e.g. Zustand) for designers and objects
-- `src/api/` — Mock API layer (to be wired to store; easy swap for real API later)
+```
+src/
+  api/           # Mock API (designers & objects). Swap for real API here.
+  components/    # AddDesignerModal, PageTabs, not-found, etc.
+  data/          # Initial mock designers
+  routes/        # TanStack Router: designers, editor, root, index, 404
+  schemas/       # Zod: designer, object (+ form schemas)
+  store/         # Zustand: designers, objects (with persist)
+```
+
+---
+
+## Deployment
+
+The app can be deployed to any static host (e.g. Vercel, GitHub Pages). Use the same build:
+
+```bash
+pnpm build
+```
+
+Output is in `dist/`. For GitHub Pages, set the repo’s base path in Vite config if needed.

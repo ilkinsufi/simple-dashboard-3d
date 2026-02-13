@@ -10,13 +10,14 @@ export const DesignerSchema = z.object({
 export const DesignerFormSchema = z.object({
   fullName: z
     .string()
-    .min(2, "Ad minimum 2 simvoldan ibarət olmalıdır")
-    .max(100, "Ad maksimum 100 simvoldan ibarət olmalıdır")
-    .regex(/^[a-zA-ZəöüğıçşƏÖÜĞIÇŞ\s]+$/, "Ad yalnız hərf və boşluq ola bilər"),
+    .min(2, "Full name must be at least 2 characters long")
+    .max(100, "Full name must be at most 100 characters long")
+    .regex(/^[a-zA-ZəöüğıçşƏÖÜĞIÇŞ\s]+$/, "Full name must only contain letters and spaces"),
   workingHours: z.coerce
     .number()
-    .min(0, "İş saatı minimum 0 olmalıdır")
-    .max(24, "İş saatı maksimum 24 olmalıdır"),
+    .refine((n) => !Number.isNaN(n), "Working hours must be a number between 0 and 24")
+    .min(0, "Working hours must be at least 0")
+    .max(24, "Working hours must be at most 24"),
 });
 
 export type Designer = z.infer<typeof DesignerSchema>;

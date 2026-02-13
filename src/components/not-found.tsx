@@ -1,18 +1,18 @@
-import LinkButton from "./LinkButton";
+import { Link } from "@tanstack/react-router";
 
 const NotFound = () => {
   return (
-    <section className="py-8 flex flex-col justify-center items-center h-dvh px-4 mx-auto lg:py-16 lg:px-6">
-      <div className="mx-auto max-w-screen-sm text-center">
-        <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-blue-600 dark:text-blue-500">
-          404
-        </h1>
-        <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">
-          Səhifə tapılmadı
-        </p>
-        <LinkButton to="/designers">Geri qayıt</LinkButton>
+    <div className="hero bg-base-200 min-h-dvh">
+      <div className="hero-content text-center">
+        <div className="max-w-md">
+          <h1 className="text-5xl font-bold">404</h1>
+          <p className="py-6">Page not found </p>
+          <Link to="/designers" className="btn btn-primary btn-lg" aria-label="Go back to Designers page">
+            Go back
+          </Link>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

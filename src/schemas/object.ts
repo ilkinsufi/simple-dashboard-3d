@@ -19,9 +19,12 @@ export const ObjectSchema = z.object({
 });
 
 export const ObjectFormSchema = z.object({
-  name: z.string().min(1, "Ad boş ola bilməz").max(100),
-  attachedDesignerId: z.string().min(1, "Dizayner seçilməlidir"),
-  color: z.string().min(1, "Rəng seçilməlidir"),
+  name: z
+    .string()
+    .min(1, "Name must be at least 1 character long")
+    .max(100, "Name must be at most 100 characters long"),
+  attachedDesignerId: z.string().min(1, "Designer must be selected"),
+  color: z.string().min(1, "Color must be selected"),
   position: ObjectPositionSchema.optional(),
   size: ObjectSize,
 });

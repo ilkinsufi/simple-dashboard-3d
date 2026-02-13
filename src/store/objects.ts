@@ -51,8 +51,7 @@ export const useObjectsStore = create<ObjectsStore>()(
           objects: state.objects.map((o) => (o.id === id ? updated : o)),
         }));
       },
-      removeObject: (id) =>
-        set((state) => ({ objects: state.objects.filter((o) => o.id !== id) })),
+      removeObject: (id) => set((state) => ({ objects: state.objects.filter((o) => o.id !== id) })),
     }),
     { name: "objects-storage" }
   )

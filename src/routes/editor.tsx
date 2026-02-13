@@ -1,5 +1,4 @@
-import { createFileRoute, HeadContent } from "@tanstack/react-router";
-import LinkButton from "../components/LinkButton";
+import { createFileRoute, HeadContent, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/editor")({
   component: () => (
@@ -15,9 +14,11 @@ export const Route = createFileRoute("/editor")({
 
 function RouteComponent() {
   return (
-    <div className="">
+    <section className="container max-w-4xl mx-auto max-sm:px-5">
       Editor Page <br />
-      <LinkButton to="/designers">Back to Designers</LinkButton>
-    </div>
+      <Link to="/designers" className="btn btn-primary">
+        Back to Designers
+      </Link>
+    </section>
   );
 }
