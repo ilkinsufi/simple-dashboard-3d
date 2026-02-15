@@ -8,6 +8,7 @@ export {
 export {
   ObjectSchema,
   ObjectFormSchema,
+  ObjectEditSchema,
   ObjectSize,
   ObjectPositionSchema,
   type SceneObject,

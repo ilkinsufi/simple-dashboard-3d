@@ -5,6 +5,7 @@ import { AddObjectModal } from "../components/AddObjectModal";
 import { useObjectsStore } from "../store/objects";
 import { useDesignerStore } from "../store/designer";
 import { updateObject, removeObject } from "../api";
+import { ObjectEditSchema } from "../schemas";
 
 export const Route = createFileRoute("/editor")({
   component: () => (
@@ -32,14 +33,52 @@ function RouteComponent() {
   const designers = useDesignerStore((s) => s.designers);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [pendingAddPosition, setPendingAddPosition] = useState<{
+    x: number;
+    y: number;
+    z: number;
+  } | null>(null);
 
   const selectedObject = selectedId ? objects.find((o) => o.id === selectedId) : null;
+
+  const handleCanvasDoubleClick = (pos: { x: number; y: number; z: number }) => {
+    setPendingAddPosition(pos);
+    setAddModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+    setPendingAddPosition(null);
+  };
 
   return (
     <section className="flex-1 flex flex-col min-h-0 h-full">
       <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 px-3 sm:px-4 py-3">
-        <aside className="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col gap-4 overflow-y-auto">
-          <div className="rounded-2xl bg-base-100 border border-base-300/50 shadow-sm overflow-hidden">
+        <aside className="w-full lg:w-72 xl:w-80 shrink-0 min-h-0 flex flex-col gap-4 overflow-y-auto">
+          <details className="group shrink-0 rounded-2xl bg-base-200/60 border border-base-300/50 overflow-hidden">
+            <summary className="p-3 cursor-pointer list-none flex items-center gap-2 text-sm font-medium text-base-content hover:bg-base-300/30 select-none">
+              <span className="transition group-open:rotate-90">▸</span>
+              How to use
+            </summary>
+            <div className="px-3 pb-3 pt-0 text-sm text-base-content/80 space-y-1.5">
+              <p>
+                • <strong>Double-click</strong> on the canvas to add an object there (then pick
+                designer, name, etc.)
+              </p>
+              <p>
+                • <strong>Click</strong> an object to select it (or use the list on the left)
+              </p>
+              <p>
+                • <strong>Drag</strong> a selected object to move it on the canvas
+              </p>
+              <p>
+                • Use the <strong>Edit</strong> panel below to change name, designer, color, size or
+                position
+              </p>
+            </div>
+          </details>
+
+          <div className="rounded-2xl shrink-0 bg-base-100 border border-base-300/50 shadow-sm overflow-hidden">
             <div className="p-4">
               <h2 className="font-semibold text-base-content mb-3">Objects</h2>
               <button
@@ -58,7 +97,7 @@ function RouteComponent() {
           </div>
 
           {objects.length > 0 && (
-            <div className="rounded-2xl bg-base-100 border border-base-300/50 shadow-sm overflow-hidden">
+            <div className="rounded-2xl shrink-0 bg-base-100 border border-base-300/50 shadow-sm overflow-hidden">
               <div className="p-4">
                 <h3 className="font-semibold text-sm text-base-content mb-2">List</h3>
                 <ul className="space-y-0.5">
@@ -69,7 +108,7 @@ function RouteComponent() {
                       <li key={obj.id}>
                         <button
                           type="button"
-                          className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all duration-200 border-l-4 ${
+                          className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all duration-200  ${
                             isSelected
                               ? "bg-primary/15 border-primary font-medium"
                               : "border-transparent hover:bg-base-200/80"
@@ -107,15 +146,22 @@ function RouteComponent() {
           )}
         </aside>
 
-        <div className="flex-1 min-h-0 flex flex-col rounded-2xl overflow-hidden border border-base-300/50 shadow-sm bg-base-100">
-          <Scene3D objects={objects} selectedId={selectedId} onSelect={setSelectedId} />
+        <div className="flex-1 min-h-[60dvh] lg:min-h-0 flex flex-col rounded-2xl overflow-hidden border border-base-300/50 shadow-sm bg-base-100">
+          <Scene3D
+            objects={objects}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            onCanvasDoubleClick={handleCanvasDoubleClick}
+            onObjectMove={(id, pos) => updateObject(id, { position: pos })}
+          />
         </div>
       </div>
 
       <AddObjectModal
         open={addModalOpen}
-        onClose={() => setAddModalOpen(false)}
+        onClose={closeAddModal}
         designers={designers}
+        initialPosition={pendingAddPosition}
       />
     </section>
   );
@@ -150,6 +196,9 @@ function EditPanel({ object, designers, onClose, onSave, onDelete }: EditPanelPr
   const [posX, setPosX] = useState(object.position.x);
   const [posY, setPosY] = useState(object.position.y);
   const [posZ, setPosZ] = useState(object.position.z);
+  const [nameErr, setNameErr] = useState("");
+  const [designerErr, setDesignerErr] = useState("");
+  const [posErr, setPosErr] = useState("");
 
   useEffect(() => {
     setName(object.name);
@@ -163,17 +212,40 @@ function EditPanel({ object, designers, onClose, onSave, onDelete }: EditPanelPr
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    onSave({
-      name,
+    setNameErr("");
+    setDesignerErr("");
+    setPosErr("");
+
+    const res = ObjectEditSchema.safeParse({
+      name: name.trim(),
       attachedDesignerId: designerId,
       color,
-      position: { x: posX, y: posY, z: posZ },
       size,
+      position: { x: posX, y: posY, z: posZ },
     });
+
+    if (!res.success) {
+      for (const i of res.error.issues) {
+        const p = i.path[0];
+        if (p === "name") setNameErr(i.message);
+        else if (p === "attachedDesignerId") setDesignerErr(i.message);
+        else if (p === "position") setPosErr(i.message);
+      }
+      return;
+    }
+
+    onSave({
+      name: res.data.name,
+      attachedDesignerId: res.data.attachedDesignerId,
+      color: res.data.color,
+      position: res.data.position,
+      size: res.data.size,
+    });
+    onClose();
   }
 
   return (
-    <div className="rounded-2xl bg-base-100 border border-base-300/50 shadow-sm overflow-hidden">
+    <div className="rounded-2xl shrink-0 bg-base-100 border border-base-300/50 shadow-sm overflow-hidden">
       <div className="p-4">
         <h3 className="font-semibold text-base-content mb-3">Edit object</h3>
         <form onSubmit={handleSave} className="space-y-3">
@@ -184,9 +256,13 @@ function EditPanel({ object, designers, onClose, onSave, onDelete }: EditPanelPr
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="input input-sm w-full"
+              onChange={(e) => {
+                setName(e.target.value);
+                setNameErr("");
+              }}
+              className={nameErr ? "input input-sm input-error w-full" : "input input-sm w-full"}
             />
+            {nameErr && <p className="text-sm text-error mt-0.5">{nameErr}</p>}
           </div>
           <div>
             <label className="label py-1">
@@ -194,8 +270,13 @@ function EditPanel({ object, designers, onClose, onSave, onDelete }: EditPanelPr
             </label>
             <select
               value={designerId}
-              onChange={(e) => setDesignerId(e.target.value)}
-              className="select select-sm w-full"
+              onChange={(e) => {
+                setDesignerId(e.target.value);
+                setDesignerErr("");
+              }}
+              className={
+                designerErr ? "select select-sm select-error w-full" : "select select-sm w-full"
+              }
             >
               {designers.map((d) => (
                 <option key={d.id} value={d.id}>
@@ -203,6 +284,7 @@ function EditPanel({ object, designers, onClose, onSave, onDelete }: EditPanelPr
                 </option>
               ))}
             </select>
+            {designerErr && <p className="text-sm text-error mt-0.5">{designerErr}</p>}
           </div>
           <div>
             <label className="label py-1">
@@ -243,24 +325,34 @@ function EditPanel({ object, designers, onClose, onSave, onDelete }: EditPanelPr
                 type="number"
                 step={0.5}
                 value={posX}
-                onChange={(e) => setPosX(Number(e.target.value))}
-                className="input input-sm w-full"
+                onChange={(e) => {
+                  setPosX(Number(e.target.value));
+                  setPosErr("");
+                }}
+                className={posErr ? "input input-sm input-error w-full" : "input input-sm w-full"}
               />
               <input
                 type="number"
                 step={0.5}
                 value={posY}
-                onChange={(e) => setPosY(Number(e.target.value))}
-                className="input input-sm w-full"
+                onChange={(e) => {
+                  setPosY(Number(e.target.value));
+                  setPosErr("");
+                }}
+                className={posErr ? "input input-sm input-error w-full" : "input input-sm w-full"}
               />
               <input
                 type="number"
                 step={0.5}
                 value={posZ}
-                onChange={(e) => setPosZ(Number(e.target.value))}
-                className="input input-sm w-full"
+                onChange={(e) => {
+                  setPosZ(Number(e.target.value));
+                  setPosErr("");
+                }}
+                className={posErr ? "input input-sm input-error w-full" : "input input-sm w-full"}
               />
             </div>
+            {posErr && <p className="text-sm text-error mt-0.5">{posErr}</p>}
           </div>
           <div className="flex flex-wrap gap-2 pt-3">
             <button type="submit" className="btn btn-sm btn-primary rounded-xl">

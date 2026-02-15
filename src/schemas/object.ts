@@ -29,5 +29,17 @@ export const ObjectFormSchema = z.object({
   size: ObjectSize,
 });
 
+export const ObjectEditSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Max 100 chars"),
+  attachedDesignerId: z.string().min(1, "Pick a designer"),
+  color: z.string().min(1),
+  size: ObjectSize,
+  position: z.object({
+    x: z.coerce.number(),
+    y: z.coerce.number(),
+    z: z.coerce.number(),
+  }),
+});
+
 export type SceneObject = z.infer<typeof ObjectSchema>;
 export type ObjectFormData = z.infer<typeof ObjectFormSchema>;

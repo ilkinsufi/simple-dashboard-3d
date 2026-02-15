@@ -7,6 +7,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   designers: Designer[];
+  initialPosition?: { x: number; y: number; z: number } | null;
 };
 
 const COLORS = [
@@ -18,7 +19,7 @@ const COLORS = [
   { value: "#f97316", label: "Orange" },
 ];
 
-export function AddObjectModal({ open, onClose, designers }: Props) {
+export function AddObjectModal({ open, onClose, designers, initialPosition }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [name, setName] = useState("");
   const [designerId, setDesignerId] = useState("");
@@ -35,25 +36,30 @@ export function AddObjectModal({ open, onClose, designers }: Props) {
     if (!el) return;
     if (open) {
       el.showModal();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (designers.length > 0 && !designerId) setDesignerId(designers[0].id);
+      queueMicrotask(() => {
+        if (designers.length > 0) setDesignerId(designers[0].id);
+        if (initialPosition) {
+          setPosX(initialPosition.x);
+          setPosY(initialPosition.y);
+          setPosZ(initialPosition.z);
+        }
+      });
     } else {
       el.close();
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, designers.length]);
+  }, [open, designers, initialPosition]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setNameError("");
     setDesignerError("");
 
+    const pos = initialPosition ?? { x: posX, y: posY, z: posZ };
     const result = ObjectFormSchema.safeParse({
       name: name.trim(),
       attachedDesignerId: designerId,
       color,
-      position: { x: posX, y: posY, z: posZ },
+      position: pos,
       size,
     });
 
@@ -69,7 +75,7 @@ export function AddObjectModal({ open, onClose, designers }: Props) {
       name: result.data.name,
       attachedDesignerId: result.data.attachedDesignerId,
       color: result.data.color,
-      position: result.data.position!,
+      position: pos,
       size: result.data.size,
     });
     onClose();
@@ -79,6 +85,8 @@ export function AddObjectModal({ open, onClose, designers }: Props) {
     setPosY(0);
     setPosZ(0);
   }
+
+  const useClickPosition = !!initialPosition;
 
   return (
     <dialog ref={dialogRef} className="modal" aria-modal="true">
@@ -157,37 +165,44 @@ export function AddObjectModal({ open, onClose, designers }: Props) {
             </select>
           </div>
 
-          <div>
-            <label className="label">
-              <span className="label-text">Position (X, Y, Z)</span>
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                step={0.5}
-                value={posX}
-                onChange={(e) => setPosX(Number(e.target.value))}
-                className="input w-full"
-                placeholder="X"
-              />
-              <input
-                type="number"
-                step={0.5}
-                value={posY}
-                onChange={(e) => setPosY(Number(e.target.value))}
-                className="input w-full"
-                placeholder="Y"
-              />
-              <input
-                type="number"
-                step={0.5}
-                value={posZ}
-                onChange={(e) => setPosZ(Number(e.target.value))}
-                className="input w-full"
-                placeholder="Z"
-              />
+          {!useClickPosition && (
+            <div>
+              <label className="label">
+                <span className="label-text">Position (X, Y, Z)</span>
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  step={0.5}
+                  value={posX}
+                  onChange={(e) => setPosX(Number(e.target.value))}
+                  className="input w-full"
+                  placeholder="X"
+                />
+                <input
+                  type="number"
+                  step={0.5}
+                  value={posY}
+                  onChange={(e) => setPosY(Number(e.target.value))}
+                  className="input w-full"
+                  placeholder="Y"
+                />
+                <input
+                  type="number"
+                  step={0.5}
+                  value={posZ}
+                  onChange={(e) => setPosZ(Number(e.target.value))}
+                  className="input w-full"
+                  placeholder="Z"
+                />
+              </div>
             </div>
-          </div>
+          )}
+          {useClickPosition && (
+            <p className="text-sm text-base-content/60">
+              Object will be placed where you double-clicked.
+            </p>
+          )}
 
           <div className="modal-action">
             <button type="button" className="btn" onClick={onClose}>
